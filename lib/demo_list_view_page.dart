@@ -11,7 +11,7 @@ class DemoListViewPage extends StatefulWidget {
 
 class _DemoListViewPageState extends State<DemoListViewPage> {
   bool _shouldShowForm = true;
-  final List<Todo> listTodo = [];
+  List<Todo> listTodo = [];
 
   @override
   Widget build(BuildContext context) {
@@ -82,9 +82,12 @@ class _DemoListViewPageState extends State<DemoListViewPage> {
                       Colors.green),
                 ),
                 onPressed: () {
+                  var title = titleController.text;
+                  var subTitle = subTitleController.text;
+
                   setState(() {
-                    var title = titleController.text;
-                    var subTitle = subTitleController.text;
+                    setShouldShowForm(false);
+                    if (title.isEmpty || subTitle.isEmpty) return;
                     listTodo.add(Todo(title, subTitle));
                   });
                 },
@@ -136,7 +139,7 @@ class _DemoListViewPageState extends State<DemoListViewPage> {
   Widget displayListTodo(List<Todo> listTodo) {
     return ListView.builder(
       itemBuilder: (BuildContext context, int index) {
-        return makeTodoItem(index, listTodo[index]);
+        return makeTodoItem(index, listTodo.reversed.toList()[index]);
       },
       itemCount: listTodo.length,
     );
@@ -145,13 +148,6 @@ class _DemoListViewPageState extends State<DemoListViewPage> {
   Widget makeTodoItem(int index, Todo todo) {
     return Card(
       child: ListTile(
-        leading: InkWell(
-          child: Text("$index", style: TextStyle(fontSize: 20)),
-          onLongPress: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("Click icon leading")));
-          },
-        ),
         title: Text(todo.title),
         subtitle: Text(todo.subTitle),
         trailing: const Icon(Icons.delete, color: Colors.red),
