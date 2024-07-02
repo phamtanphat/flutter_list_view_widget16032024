@@ -1,0 +1,171 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+
+class DemoListViewPage extends StatefulWidget {
+  const DemoListViewPage({super.key});
+
+  @override
+  State<DemoListViewPage> createState() => _DemoListViewPageState();
+}
+
+class _DemoListViewPageState extends State<DemoListViewPage> {
+  bool _shouldShowForm = true;
+  final List<Todo> listTodo = [];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Demo List View Page"),
+      ),
+      body: Container(
+          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+          constraints: BoxConstraints.expand(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              displayForm(_shouldShowForm),
+              SizedBox(height: 10),
+              Expanded(child: displayListTodo(listTodo))
+            ],
+          )
+      ),
+    );
+  }
+
+  Widget displayForm(bool shouldShowForm) {
+    if (shouldShowForm) {
+      return makeFormInput(shouldShowForm);
+    } else {
+      return makeButtonOpenForm(shouldShowForm);
+    }
+  }
+
+  Widget makeFormInput(bool shouldShowForm) {
+    final titleController = TextEditingController();
+    final subTitleController = TextEditingController();
+
+    return Container(
+      child: Column(
+        children: [
+          TextField(
+            controller: titleController,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: "Title",
+            ),
+            textInputAction: TextInputAction.next,
+            maxLines: 1,
+          ),
+          SizedBox(height: 10),
+          TextField(
+            controller: subTitleController,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: "Description",
+            ),
+            textInputAction: TextInputAction.done,
+            maxLines: 1,
+          ),
+          SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(child: ElevatedButton(
+                style: ButtonStyle(
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(5))
+                    ),
+                  ),
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                      Colors.green),
+                ),
+                onPressed: () {
+                  setState(() {
+                    var title = titleController.text;
+                    var subTitle = subTitleController.text;
+                    listTodo.add(Todo(title, subTitle));
+                  });
+                },
+                child: Text("Add todo", style: TextStyle(color: Colors.white)),
+              )),
+              SizedBox(width: 20),
+              Expanded(child: ElevatedButton(
+                style: ButtonStyle(
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(5))
+                    ),
+                  ),
+                  backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
+                ),
+                onPressed: () {
+                  setState(() {
+                    setShouldShowForm(!shouldShowForm);
+                  });
+                },
+                child: Text("Cancel", style: TextStyle(color: Colors.white)),
+              )),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget makeButtonOpenForm(bool shouldShowForm) {
+    return ElevatedButton(
+      style: ButtonStyle(
+        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(5))
+          ),
+        ),
+        backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
+      ),
+      onPressed: () {
+        setState(() {
+          setShouldShowForm(!shouldShowForm);
+        });
+      },
+      child: Text("+", style: TextStyle(color: Colors.white)),
+    );
+  }
+
+  Widget displayListTodo(List<Todo> listTodo) {
+    return ListView.builder(
+      itemBuilder: (BuildContext context, int index) {
+        return makeTodoItem(index, listTodo[index]);
+      },
+      itemCount: listTodo.length,
+    );
+  }
+
+  Widget makeTodoItem(int index, Todo todo) {
+    return Card(
+      child: ListTile(
+        leading: InkWell(
+          child: Text("$index", style: TextStyle(fontSize: 20)),
+          onLongPress: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("Click icon leading")));
+          },
+        ),
+        title: Text(todo.title),
+        subtitle: Text(todo.subTitle),
+        trailing: const Icon(Icons.delete, color: Colors.red),
+      ),
+    );
+  }
+
+  void setShouldShowForm(bool shouldShowForm) {
+    _shouldShowForm = shouldShowForm;
+  }
+}
+
+class Todo {
+  String title;
+  String subTitle;
+  Todo(this.title, this.subTitle);
+}
