@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -58,7 +59,7 @@ class _DemoListViewPageState extends State<DemoListViewPage> {
             textInputAction: TextInputAction.next,
             maxLines: 1,
           ),
-          SizedBox(height: 10),
+          SizedBox(height: MediaQuery.of(context).size.height / 40),
           TextField(
             controller: subTitleController,
             decoration: InputDecoration(
@@ -68,7 +69,7 @@ class _DemoListViewPageState extends State<DemoListViewPage> {
             textInputAction: TextInputAction.done,
             maxLines: 1,
           ),
-          SizedBox(height: 10),
+          SizedBox(height: MediaQuery.of(context).size.height / 40),
           Row(
             children: [
               Expanded(child: ElevatedButton(
@@ -88,7 +89,11 @@ class _DemoListViewPageState extends State<DemoListViewPage> {
                   setState(() {
                     setShouldShowForm(false);
                     if (title.isEmpty || subTitle.isEmpty) return;
-                    listTodo.add(Todo(title, subTitle));
+                    var index = 0;
+                    if (listTodo.isNotEmpty) {
+                      index = listTodo.length;
+                    }
+                    listTodo.add(Todo(index ,title, subTitle));
                   });
                 },
                 child: Text("Add todo", style: TextStyle(color: Colors.white)),
@@ -148,6 +153,7 @@ class _DemoListViewPageState extends State<DemoListViewPage> {
   Widget makeTodoItem(int index, Todo todo) {
     return Card(
       child: ListTile(
+        leading: Text(todo.index.toString()),
         title: Text(todo.title),
         subtitle: Text(todo.subTitle),
         trailing: const Icon(Icons.delete, color: Colors.red),
@@ -161,7 +167,8 @@ class _DemoListViewPageState extends State<DemoListViewPage> {
 }
 
 class Todo {
+  int index;
   String title;
   String subTitle;
-  Todo(this.title, this.subTitle);
+  Todo(this.index, this.title, this.subTitle);
 }
