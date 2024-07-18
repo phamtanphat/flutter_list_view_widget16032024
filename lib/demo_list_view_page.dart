@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -83,18 +82,7 @@ class _DemoListViewPageState extends State<DemoListViewPage> {
                       Colors.green),
                 ),
                 onPressed: () {
-                  var title = titleController.text;
-                  var subTitle = subTitleController.text;
-
-                  setState(() {
-                    setShouldShowForm(false);
-                    if (title.isEmpty || subTitle.isEmpty) return;
-                    var index = 0;
-                    if (listTodo.isNotEmpty) {
-                      index = listTodo.length;
-                    }
-                    listTodo.add(Todo(index ,title, subTitle));
-                  });
+                  addNewTodo(titleController.text, subTitleController.text, listTodo);
                 },
                 child: Text("Add todo", style: TextStyle(color: Colors.white)),
               )),
@@ -144,19 +132,24 @@ class _DemoListViewPageState extends State<DemoListViewPage> {
   Widget displayListTodo(List<Todo> listTodo) {
     return ListView.builder(
       itemBuilder: (BuildContext context, int index) {
-        return makeTodoItem(index, listTodo.reversed.toList()[index]);
+        return makeTodoItem(index, listTodo.reversed.toList()[index], listTodo);
       },
       itemCount: listTodo.length,
     );
   }
 
-  Widget makeTodoItem(int index, Todo todo) {
+  Widget makeTodoItem(int index, Todo todo, List<Todo> listTodo) {
     return Card(
       child: ListTile(
-        leading: Text(todo.index.toString()),
+        onLongPress: openUpdateDialog,
         title: Text(todo.title),
         subtitle: Text(todo.subTitle),
-        trailing: const Icon(Icons.delete, color: Colors.red),
+        trailing: InkWell(
+            onTap: () {
+              deleteTodo(todo, listTodo);
+            },
+            child: Icon(Icons.delete, color: Colors.red)
+        ),
       ),
     );
   }
@@ -164,11 +157,35 @@ class _DemoListViewPageState extends State<DemoListViewPage> {
   void setShouldShowForm(bool shouldShowForm) {
     _shouldShowForm = shouldShowForm;
   }
+
+  void addNewTodo(String title, String subTitle, List<Todo> listTodo) {
+    setState(() {
+      setShouldShowForm(false);
+      if (title.isEmpty || subTitle.isEmpty) return;
+      listTodo.add(Todo(title, subTitle));
+    });
+  }
+
+  void deleteTodo(Todo todo, List<Todo> listTodo) {
+    var index = listTodo.indexOf(todo);
+    if (index < 0) return;
+    setState(() {
+      listTodo.remove(todo);
+    });
+  }
+
+  void openUpdateDialog() {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return Dialog();
+          },
+      );
+  }
 }
 
 class Todo {
-  int index;
   String title;
   String subTitle;
-  Todo(this.index, this.title, this.subTitle);
+  Todo(this.title, this.subTitle);
 }
