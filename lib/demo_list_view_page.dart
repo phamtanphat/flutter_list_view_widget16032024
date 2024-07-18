@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_list_view_widget16032024/dialog_widget.dart';
 
 class DemoListViewPage extends StatefulWidget {
   const DemoListViewPage({super.key});
@@ -43,70 +44,21 @@ class _DemoListViewPageState extends State<DemoListViewPage> {
   }
 
   Widget makeFormInput(bool shouldShowForm) {
-    final titleController = TextEditingController();
-    final subTitleController = TextEditingController();
-
-    return Container(
-      child: Column(
-        children: [
-          TextField(
-            controller: titleController,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: "Title",
-            ),
-            textInputAction: TextInputAction.next,
-            maxLines: 1,
-          ),
-          SizedBox(height: MediaQuery.of(context).size.height / 40),
-          TextField(
-            controller: subTitleController,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: "Description",
-            ),
-            textInputAction: TextInputAction.done,
-            maxLines: 1,
-          ),
-          SizedBox(height: MediaQuery.of(context).size.height / 40),
-          Row(
-            children: [
-              Expanded(child: ElevatedButton(
-                style: ButtonStyle(
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(5))
-                    ),
-                  ),
-                  backgroundColor: MaterialStateProperty.all<Color>(
-                      Colors.green),
-                ),
-                onPressed: () {
-                  addNewTodo(titleController.text, subTitleController.text, listTodo);
-                },
-                child: Text("Add todo", style: TextStyle(color: Colors.white)),
-              )),
-              SizedBox(width: 20),
-              Expanded(child: ElevatedButton(
-                style: ButtonStyle(
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(5))
-                    ),
-                  ),
-                  backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
-                ),
-                onPressed: () {
-                  setState(() {
-                    setShouldShowForm(!shouldShowForm);
-                  });
-                },
-                child: Text("Cancel", style: TextStyle(color: Colors.white)),
-              )),
-            ],
-          )
-        ],
-      ),
+    return FormInputWidget(
+      hintFirstInput: "Title",
+      hintSecondInput: "Description",
+      firstTextButton: "Add Todo",
+      secondTextButton: "Cancel",
+      firstButtonColor: Colors.green,
+      secondButtonColor: Colors.red,
+      onClickFirstButton: (title, description) {
+        addNewTodo(title, description, listTodo);
+      },
+      onClickSecondButton: (title, description) {
+        setState(() {
+          setShouldShowForm(!shouldShowForm);
+        });
+      },
     );
   }
 
@@ -178,7 +130,9 @@ class _DemoListViewPageState extends State<DemoListViewPage> {
       showDialog(
           context: context,
           builder: (context) {
-            return Dialog();
+            return Dialog(
+              child: FormInputWidget(),
+            );
           },
       );
   }
